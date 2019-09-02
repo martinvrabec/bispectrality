@@ -1,0 +1,99 @@
+(* Arguments of functions *)
+z = {u, v};
+X = {x, y};
+
+(* A shift operator *)
+T[F_, \[Gamma]_] := 
+  F /. {u -> u + \[Gamma][[1]], v -> v + \[Gamma][[2]] };
+
+(* Coroots *)
+check[\[Gamma]_] := 2.0 \[Gamma]/(\[Gamma].\[Gamma]); 
+(* Reflection *)
+s[\[Gamma]_, x_] := x - (check[\[Gamma]].x) \[Gamma];
+
+(* Vectors *)
+b1 = {Sqrt[2], 0};
+b2 = {Sqrt[2]/2, Sqrt[6]/2};
+b3 = {-(Sqrt[2]/2), Sqrt[6]/2};
+a3 = {3 Sqrt[2]/2, Sqrt[6]/2};
+a2 = {-3 Sqrt[2]/2, Sqrt[6]/2};
+a1 = {0, Sqrt[6]};
+
+R   = {1/2 b1, -(1/2) b1, 1/2 b2, -(1/2) b2, 1/2 b3, -(1/2) b3};
+Rplus = {1/2 b1, 1/2 b2, 1/2 b3}; 
+m := Association[1/2 b1 -> 2, -(1/2) b1 -> 2, 
+   1/2 b2 -> 2, -(1/2) b2 -> 2, 1/2 b3 -> 2, -(1/2) b3 -> 2];
+   
+(* The Macdonald operator for \pi = 2/3 a1 *)
+Wpi = { 2/3 a1, - (2/3) a2,  -(2/3) a3};
+Dpi[F_] := Sum[
+   Product[If[\[Gamma].\[Tau] == 1, (1 - m[\[Gamma]]/(\[Gamma].z)), 
+      1], {\[Gamma], R}] T[F, \[Tau]], {\[Tau] , Wpi}]; 
+
+Dpi[F_, 1] := (1 - 4/(b2.z)) (1 - 4/(b3.z)) T[F, 2/3 a1];
+Dpi[F_, 2] := (1 - 4/(b1.z)) (1 + 4/(b3.z)) T[F, -2/3 a2];
+Dpi[F_, 3] := (1 + 4/(b2.z)) (1 + 4/(b1.z)) T[F, -2/3 a3];
+
+(* Baker-Akhiezer function *)
+\[Mu] = Sum[Exp[\[Tau].X], {\[Tau] , Wpi}];
+M = Sum[m[\[Gamma]], {\[Gamma], Rplus}];
+Print["M is equal to: " <> ToString[M]]
+Q = Product[
+   Product[((\[Gamma].z)^2 - s^2), {s, 1, m[\[Gamma]]}], {\[Gamma], 
+    Rplus}];
+c = M! Product[
+    Sum[(\[Gamma].\[Tau]) Exp[\[Tau].X], {\[Tau] , Wpi}]^ 
+     m[\[Gamma]], {\[Gamma], Rplus}];
+
+DiffOp[F_] := Dpi[F] - \[Mu] F;
+
+DiffOp[F_, 1] := Dpi[F, 1] - F // Simplify;
+DiffOp[F_, 2] := Dpi[F, 2] - F // Simplify;
+DiffOp[F_, 3] := Dpi[F, 3] - F // Simplify; 
+
+Psi = c^-1  Nest[DiffOp, Q Exp[X.z], M];
+
+Print["The size of Psi is: " <> ToString[ByteCount[Psi]]]
+
+(* Do the first iteration *)
+Do[coeff[i] = DiffOp[Q, i], {i, {1, 2, 3}}]
+
+(* Do the second iteration *)
+list2 = With[{n = 3, k = 2}, 
+   Join @@ Table[IntegerPartitions[s, {k}, Range[n]], {s, k, n k}]];
+Do[coeff[l] = 
+  Sum[DiffOp[coeff[p[[1]]], p[[2]]], {p, Permutations[l]}], {l, 
+  list2}]
+
+Print["Second iteration finished."]
+
+(* Do the third iteration *)
+list3 = With[{n = 3, k = 3}, 
+  Join @@ Table[IntegerPartitions[s, {k}, Range[n]], {s, k, n k}]]
+Do[coeff[l] = 
+  Sum[DiffOp[coeff[ReverseSort[DeleteCases[l, p, 1, 1]]], p], {p, 
+    DeleteDuplicates[l]}], {l, list3}]
+	
+Print["Third iteration finished."]
+
+(* Do the fourth iteration *)
+list4 = With[{n = 3, k = 4}, 
+  Join @@ Table[IntegerPartitions[s, {k}, Range[n]], {s, k, n k}]]
+Do[coeff[l] = 
+  Sum[DiffOp[coeff[ReverseSort[DeleteCases[l, p, 1, 1]]], p], {p, 
+    DeleteDuplicates[l]}], {l, list4}]
+
+Print["Fourth iteration finished."]
+
+Print[N[Nest[DiffOp, Q Exp[X.z], 4]/Exp[X.z] - 
+   Sum[coeff[l] Exp[Simplify[Sum[Wpi[[i]].X, {i, l}]]],  {l, 
+     list4}] /. {u -> 1, v -> 0.1, x -> 0.2, y -> -1}]]
+	 
+Print[ 
+N[Nest[DiffOp, Q Exp[X.z], 4]/Exp[X.z] /. {u -> 1, v -> 0.1, 
+   x -> 0.2, y -> -1}]]	 
+   
+Print["Size of the intermediate expression is: " <> ToString[ByteCount[
+ Sum[coeff[l] Exp[Simplify[Sum[Wpi[[i]].X, {i, l}]]],  {l, list4}]]]]
+ 
+ Exit[]
