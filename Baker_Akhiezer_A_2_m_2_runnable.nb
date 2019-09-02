@@ -47,9 +47,9 @@ c = M! Product[
 
 DiffOp[F_] := Dpi[F] - \[Mu] F;
 
-DiffOp[F_, 1] := Dpi[F, 1] - F // Simplify;
-DiffOp[F_, 2] := Dpi[F, 2] - F // Simplify;
-DiffOp[F_, 3] := Dpi[F, 3] - F // Simplify; 
+DiffOp[F_, 1] := Dpi[F, 1] - F // FullSimplify;
+DiffOp[F_, 2] := Dpi[F, 2] - F // FullSimplify;
+DiffOp[F_, 3] := Dpi[F, 3] - F // FullSimplify; 
 
 Psi = c^-1  Nest[DiffOp, Q Exp[X.z], M];
 
@@ -66,6 +66,10 @@ Do[coeff[l] =
   list2}]
 
 Print["Second iteration finished."]
+
+DiffOp[F_, 1] := Dpi[F, 1] - F // Simplify;
+DiffOp[F_, 2] := Dpi[F, 2] - F // Simplify;
+DiffOp[F_, 3] := Dpi[F, 3] - F // Simplify; 
 
 (* Do the third iteration *)
 list3 = With[{n = 3, k = 3}, 
