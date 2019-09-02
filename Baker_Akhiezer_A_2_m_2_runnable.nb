@@ -161,4 +161,6 @@ Print["Size of the final expression is: " <> ToString[ByteCount[altPsi]]]
 
 Print["Max memory used was: " <> ToString[MaxMemoryUsed[]]]
 
+DumpSave["PsiA2_leq6.mx", altPsi]
+
 Exit[]
