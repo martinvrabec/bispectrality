@@ -62,7 +62,7 @@ Do[coeff[i] = DiffOp[Q, i], {i, {1, 2, 3}}]
 list2 = With[{n = 3, k = 2}, 
    Join @@ Table[IntegerPartitions[s, {k}, Range[n]], {s, k, n k}]];
 Do[coeff[l] = 
-  Sum[DiffOp[coeff[p[[1]]], p[[2]]], {p, Permutations[l]}], {l, 
+  Simplify[Sum[DiffOp[coeff[p[[1]]], p[[2]]], {p, Permutations[l]}]], {l, 
   list2}]
 
 Print["Second iteration finished."]
@@ -71,8 +71,8 @@ Print["Second iteration finished."]
 list3 = With[{n = 3, k = 3}, 
   Join @@ Table[IntegerPartitions[s, {k}, Range[n]], {s, k, n k}]]
 Do[coeff[l] = 
-  Sum[DiffOp[coeff[ReverseSort[DeleteCases[l, p, 1, 1]]], p], {p, 
-    DeleteDuplicates[l]}], {l, list3}]
+  Simplify[Sum[DiffOp[coeff[ReverseSort[DeleteCases[l, p, 1, 1]]], p], {p, 
+    DeleteDuplicates[l]}]], {l, list3}]
 	
 Print["Third iteration finished."]
 
@@ -80,33 +80,23 @@ Print["Third iteration finished."]
 list4 = With[{n = 3, k = 4}, 
   Join @@ Table[IntegerPartitions[s, {k}, Range[n]], {s, k, n k}]]
 Do[coeff[l] = 
-  Sum[DiffOp[coeff[ReverseSort[DeleteCases[l, p, 1, 1]]], p], {p, 
-    DeleteDuplicates[l]}], {l, list4}]
+  Simplify[Sum[DiffOp[coeff[ReverseSort[DeleteCases[l, p, 1, 1]]], p], {p, 
+    DeleteDuplicates[l]}]], {l, list4}]
 
 Print["Fourth iteration finished."]
 
 
-(* Do the fifth iteration *)
-list5 = With[{n = 3, k = 5}, 
-  Join @@ Table[IntegerPartitions[s, {k}, Range[n]], {s, k, n k}]]
-Do[coeff[l] = 
-  Sum[DiffOp[coeff[ReverseSort[DeleteCases[l, p, 1, 1]]], p], {p, 
-    DeleteDuplicates[l]}], {l, list5}]
-
-Print["Fifth iteration finished."]
-
-
-Print[N[Nest[DiffOp, Q Exp[X.z], 5]/Exp[X.z] - 
+Print[N[Nest[DiffOp, Q Exp[X.z], 4]/Exp[X.z] - 
    Sum[coeff[l] Exp[Simplify[Sum[Wpi[[i]].X, {i, l}]]],  {l, 
-     list5}] /. {u -> 1, v -> 0.1, x -> 0.2, y -> -1}]]
+     list4}] /. {u -> 1, v -> 0.1, x -> 0.2, y -> -1}]]
 	 
 Print[ 
-N[Nest[DiffOp, Q Exp[X.z], 5]/Exp[X.z] /. {u -> 1, v -> 0.1, 
+N[Nest[DiffOp, Q Exp[X.z], 4]/Exp[X.z] /. {u -> 1, v -> 0.1, 
    x -> 0.2, y -> -1}]]	 
    
 Print["Size of the intermediate expression is: " <> ToString[ByteCount[
- Sum[coeff[l] Exp[Simplify[Sum[Wpi[[i]].X, {i, l}]]],  {l, list5}]]]]
+ Sum[coeff[l] Exp[Simplify[Sum[Wpi[[i]].X, {i, l}]]],  {l, list4}]]]]
  
 Print[MaxMemoryUsed[]] 
  
- Exit[]
+Exit[]
