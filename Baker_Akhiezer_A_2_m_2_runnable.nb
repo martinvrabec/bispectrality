@@ -67,18 +67,21 @@ Do[coeff[l] =
 
 Print["Second iteration finished."]
 
+
 DiffOp[F_, 1] := Dpi[F, 1] - F // Simplify;
 DiffOp[F_, 2] := Dpi[F, 2] - F // Simplify;
 DiffOp[F_, 3] := Dpi[F, 3] - F // Simplify; 
+
 
 (* Do the third iteration *)
 list3 = With[{n = 3, k = 3}, 
   Join @@ Table[IntegerPartitions[s, {k}, Range[n]], {s, k, n k}]]
 Do[coeff[l] = 
-  Simplify[Sum[DiffOp[coeff[ReverseSort[DeleteCases[l, p, 1, 1]]], p], {p, 
+  FullSimplify[Sum[DiffOp[coeff[ReverseSort[DeleteCases[l, p, 1, 1]]], p], {p, 
     DeleteDuplicates[l]}]], {l, list3}]
 	
 Print["Third iteration finished."]
+
 
 (* Do the fourth iteration *)
 list4 = With[{n = 3, k = 4}, 
