@@ -85,15 +85,28 @@ Do[coeff[l] =
 
 Print["Fourth iteration finished."]
 
-Print[N[Nest[DiffOp, Q Exp[X.z], 4]/Exp[X.z] - 
+
+(* Do the fifth iteration *)
+list5 = With[{n = 3, k = 5}, 
+  Join @@ Table[IntegerPartitions[s, {k}, Range[n]], {s, k, n k}]]
+Do[coeff[l] = 
+  Sum[DiffOp[coeff[ReverseSort[DeleteCases[l, p, 1, 1]]], p], {p, 
+    DeleteDuplicates[l]}], {l, list5}]
+
+Print["Fifth iteration finished."]
+
+
+Print[N[Nest[DiffOp, Q Exp[X.z], 5]/Exp[X.z] - 
    Sum[coeff[l] Exp[Simplify[Sum[Wpi[[i]].X, {i, l}]]],  {l, 
-     list4}] /. {u -> 1, v -> 0.1, x -> 0.2, y -> -1}]]
+     list5}] /. {u -> 1, v -> 0.1, x -> 0.2, y -> -1}]]
 	 
 Print[ 
-N[Nest[DiffOp, Q Exp[X.z], 4]/Exp[X.z] /. {u -> 1, v -> 0.1, 
+N[Nest[DiffOp, Q Exp[X.z], 5]/Exp[X.z] /. {u -> 1, v -> 0.1, 
    x -> 0.2, y -> -1}]]	 
    
 Print["Size of the intermediate expression is: " <> ToString[ByteCount[
- Sum[coeff[l] Exp[Simplify[Sum[Wpi[[i]].X, {i, l}]]],  {l, list4}]]]]
+ Sum[coeff[l] Exp[Simplify[Sum[Wpi[[i]].X, {i, l}]]],  {l, list5}]]]]
+ 
+Print[MaxMemoryUsed[]] 
  
  Exit[]
