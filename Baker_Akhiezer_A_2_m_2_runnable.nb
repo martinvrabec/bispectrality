@@ -56,13 +56,13 @@ Psi = c^-1  Nest[DiffOp, Q Exp[X.z], M];
 Print["The size of Psi is: " <> ToString[ByteCount[Psi]]]
 
 (* Do the first iteration *)
-Do[coeff[i] = DiffOp[Q, i], {i, {1, 2, 3}}]
+Do[coeff[i] = FullSimplify[DiffOp[Q, i]], {i, {1, 2, 3}}]
 
 (* Do the second iteration *)
 list2 = With[{n = 3, k = 2}, 
    Join @@ Table[IntegerPartitions[s, {k}, Range[n]], {s, k, n k}]];
 Do[coeff[l] = 
-  Simplify[Sum[DiffOp[coeff[p[[1]]], p[[2]]], {p, Permutations[l]}]], {l, 
+  FullSimplify[Sum[DiffOp[coeff[p[[1]]], p[[2]]], {p, Permutations[l]}]], {l, 
   list2}]
 
 Print["Second iteration finished."]
